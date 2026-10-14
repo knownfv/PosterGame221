@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arachne v2.0 // Cyber-Pet Companion</title>
+    <style>
+        :root {
+            --bg: #09090b;
+            --card-bg: #121215;
+            --card-hover: #18181b;
+            --border: #27272a;
+            --border-focus: #52525b;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --accent: #22c55e;
+            --accent-dim: rgba(34, 197, 94, 0.1);
+            --danger: #ef4444;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 440px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Header & Navigation Tabs */
+        .app-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .nav-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 0;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: var(--card-hover);
+        }
+
+        .tab-btn.active {
+            color: var(--text-main);
+            border-bottom-color: var(--accent);
+            background: var(--card-bg);
+        }
+
+        /* View Containers */
+        .view-section {
+            display: none;
+            padding: 20px;
+            height: 420px;
+            overflow-y: auto;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        /* Pet View */
+        .pet-stage {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .pet-avatar {
+            font-size: 3.5rem;
+            margin-bottom: 8px;
+            user-select: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .pet-avatar:active {
+            transform: scale(0.9);
+        }
+
+        .pet-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .pet-mood {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .metric-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px 12px;
+        }
+
+        .metric-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: var(--font-mono);
+        }
+
+        /* Buttons & Actions */
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn {
+            background: var(--card-hover);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+        }
+
+        .btn:hover {
+            background: var(--border);
+            border-color: var(--border-focus);
+        }
+
+        .btn-primary {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-primary:hover {
+            background: rgba(34, 197, 94, 0.2);
+        }
+
+        /* Pomodoro Timer View */
+        .timer-display {
+            font-size: 3rem;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            text-align: center;
+            margin: 20px 0;
+            letter-spacing: -0.05em;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .timer-controls .btn {
+            flex: 1;
+        }
+
+        /* Code Formatter View */
+        textarea {
+            width: 100%;
+            height: 140px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-main);
+            padding: 10px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            resize: none;
+            margin-bottom: 10px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--border-focus);
+        }
+
+        .formatter-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .formatter-actions .btn {
+            flex: 1;
+        }
+
+        /* Terminal Console View */
+        .terminal-box {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            height: 310px;
+            overflow-y: auto;
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .terminal-log {
+            color: var(--text-muted);
+        }
+
+        .terminal-log.success { color: var(--accent); }
+        .terminal-log.user { color: var(--text-main); }
+
+        .terminal-input-row {
+            display: flex;
+            gap: 6px;
+        }
+
+        .terminal-input {
+            flex: 1;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-main);
+            padding: 8px 10px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+        }
+
+        .terminal-input:focus {
+            outline: none;
+            border-color: var(--border-focus);
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- App Header -->
+    <div class="app-header">
+        <div class="app-title">
+            <div class="status-dot"></div>
+            Arachne Core v2.0
+        </div>
+        <div class="metric-value" id="headerLevel" style="font-size: 0.8rem; color: var(--text-muted);">Lv. 1</div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('pet', this)">Pet</button>
+        <button class="tab-btn" onclick="switchTab('timer', this)">Focus</button>
+        <button class="tab-btn" onclick="switchTab('tools', this)">Formatter</button>
+        <button class="tab-btn" onclick="switchTab('terminal', this)">CLI</button>
+    </div>
+
+    <!-- VIEW 1: PET COMPANION -->
+    <div id="view-pet" class="view-section active">
+        <div class="pet-stage">
+            <div class="pet-avatar" id="petAvatar" onclick="interactPet()">(•̀ ω •́)</div>
+            <div class="pet-name" id="petName">Arachne Node</div>
+            <div class="pet-mood" id="petMood">System nominal. Tap to feed XP.</div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Experience</div>
+                <div class="metric-value" id="statXp">0 / 100 XP</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Battery Sync</div>
+                <div class="metric-value" id="statBattery">--</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Net Downlink</div>
+                <div class="metric-value" id="statNetwork">--</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Uptime Session</div>
+                <div class="metric-value" id="statUptime">00:00</div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="interactPet()">Feed Data Packet</button>
+            <button class="btn" onclick="resetPetData()">Reset Core</button>
+        </div>
+    </div>
+
+    <!-- VIEW 2: POMODORO TIMER -->
+    <div id="view-timer" class="view-section">
+        <div class="metric-label" style="text-align: center;">Dev Focus Session</div>
+        <div class="timer-display" id="timerDisplay">25:00</div>
+        
+        <div class="timer-controls">
+            <button class="btn btn-primary" id="timerToggleBtn" onclick="toggleTimer()">Start Focus</button>
+            <button class="btn" onclick="resetTimer()">Reset</button>
+        </div>
+
+        <div class="metric-card" style="margin-top: 20px;">
+            <div class="metric-label">Session Reward</div>
+            <div class="metric-value" style="font-size: 0.85rem; font-weight: normal; color: var(--text-muted);">
+                Completing a full 25-minute focus session automatically feeds your cyber-pet +50 XP and plays a success chime.
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW 3: CODE FORMATTER -->
+    <div id="view-tools" class="view-section">
+        <div class="metric-label" style="margin-bottom: 6px;">JSON String Sanitizer</div>
+        <textarea id="jsonInput" placeholder="Paste messy JSON or code here..."></textarea>
+        
+        <div class="formatter-actions">
+            <button class="btn btn-primary" onclick="formatJsonCode()">Format & Prettify</button>
+            <button class="btn" onclick="clearJsonInput()">Clear</button>
+        </div>
+    </div>
+
+    <!-- VIEW 4: TERMINAL CONSOLE -->
+    <div id="view-terminal" class="view-section">
+        <div class="terminal-box" id="terminalBox">
+            <div class="terminal-log">Arachne CLI v2.0 initialized. Type 'help' for commands.</div>
+        </div>
+        <div class="terminal-input-row">
+            <input type="text" class="terminal-input" id="terminalInput" placeholder="Enter command..." onkeydown="handleTerminalKey(event)">
+            <button class="btn btn-primary" onclick="executeTerminalCommand()">Run</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- APP STATE & LOCAL STORAGE ---
+    let state = JSON.parse(localStorage.getItem('arachne_pet_state')) || {
+        level: 1,
+        xp: 0,
+        petName: 'Arachne Node',
+        uptimeSeconds: 0
+    };
+
+    function saveState() {
+        localStorage.setItem('arachne_pet_state', JSON.stringify(state));
+    }
+
+    // --- AUDIO SYNTHESIZER (Web Audio API) ---
+    let audioCtx = null;
+    function playTone(frequency, duration, type = 'sine') {
+        try {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.value = frequency;
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        } catch (e) {
+            // Audio context blocked until user interaction
+        }
+    }
+
+    // --- TAB SWITCHING ---
+    function switchTab(tabId, el) {
+        document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`view-${tabId}`).classList.add('active');
+        el.classList.add('active');
+        playTone(440, 0.05);
+    }
+
+    // --- PET LOGIC ---
+    const faces = ['(•̀ ω •́)', '(๑>◡<๑)', '(⌐■_■)', '(つ✧ω✧)つ', '(¬_¬ )'];
+    
+    function updatePetUI() {
+        document.getElementById('statXp').innerText = `${state.xp} / ${state.level * 100} XP`;
+        document.getElementById('headerLevel').innerText = `Lv. ${state.level}`;
+        document.getElementById('petName').innerText = state.petName;
+        saveState();
+    }
+
+    function interactPet() {
+        state.xp += 15;
+        playTone(587.33, 0.1); // D5
+        
+        let reqXp = state.level * 100;
+        if (state.xp >= reqXp) {
+            state.level++;
+            state.xp = 0;
+            setMood('(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧', `Level Up! Reached Level ${state.level}!`);
+            playTone(880, 0.3, 'triangle');
+        } else {
+            const randomFace = faces[Math.floor(Math.random() * faces.length)];
+            setMood(randomFace, 'Data packet ingested successfully. +15 XP');
+        }
+        updatePetUI();
+    }
+
+    function setMood(face, text) {
+        document.getElementById('petAvatar').innerText = face;
+        document.getElementById('petMood').innerText = text;
+    }
+
+    function resetPetData() {
+        if (confirm('Reset core operational data and level?')) {
+            state = { level: 1, xp: 0, petName: 'Arachne Node', uptimeSeconds: 0 };
+            updatePetUI();
+            setMood('(•̀ ω •́)', 'Core reset initiated. Systems fresh.');
+            playTone(220, 0.2, 'sawtooth');
+        }
+    }
+
+    // --- HARDWARE WEB APIS ---
+    async function initHardwareSync() {
+        // Battery API
+        if ('getBattery' in navigator) {
+            try {
+                const battery = await navigator.getBattery();
+                const updateBattery = () => {
+                    const pct = Math.round(battery.level * 100);
+                    const charging = battery.charging ? '⚡' : '';
+                    document.getElementById('statBattery').innerText = `${pct}% ${charging}`;
+                };
+                updateBattery();
+                battery.addEventListener('levelchange', updateBattery);
+                battery.addEventListener('chargingchange', updateBattery);
+            } catch (e) {
+                document.getElementById('statBattery').innerText = 'N/A';
+            }
+        } else {
+            document.getElementById('statBattery').innerText = 'Unsupported';
+        }
+
+        // Network Information API
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (connection) {
+            const updateNet = () => {
+                document.getElementById('statNetwork').innerText = `${connection.downlink || '?'} Mbps`;
+            };
+            updateNet();
+            connection.addEventListener('change', updateNet);
+        } else {
+            document.getElementById('statNetwork').innerText = 'Online';
+        }
+    }
+
+    // Uptime counter
+    setInterval(() => {
+        state.uptimeSeconds++;
+        const mins = String(Math.floor(state.uptimeSeconds / 60)).padStart(2, '0');
+        const secs = String(state.uptimeSeconds % 60).padStart(2, '0');
+        document.getElementById('statUptime').innerText = `${mins}:${secs}`;
+    }, 1000);
+
+    // --- POMODORO TIMER LOGIC ---
+    let timerInterval = null;
+    let timerSeconds = 25 * 60;
+    let isTimerRunning = false;
+
+    function formatTime(sec) {
+        const m = String(Math.floor(sec / 60)).padStart(2, '0');
+        const s = String(sec % 60).padStart(2, '0');
+        return `${m}:${s}`;
+    }
+
+    function toggleTimer() {
+        const btn = document.getElementById('timerToggleBtn');
+        if (!isTimerRunning) {
+            isTimerRunning = true;
+            btn.innerText = 'Pause';
+            btn.style.borderColor = 'var(--danger)';
+            btn.style.color = 'var(--danger)';
+            playTone(523.25, 0.1);
+            
+            timerInterval = setInterval(() => {
+                if (timerSeconds > 0) {
+                    timerSeconds--;
+                    document.getElementById('timerDisplay').innerText = formatTime(timerSeconds);
+                } else {
+                    clearInterval(timerInterval);
+                    isTimerRunning = false;
+                    btn.innerText = 'Start Focus';
+                    timerSeconds = 25 * 60;
+                    state.xp += 50;
+                    updatePetUI();
+                    playTone(659.25, 0.4, 'triangle');
+                    alert('Focus Session Complete! Your pet earned +50 XP.');
+                }
+            }, 1000);
+        } else {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            btn.innerText = 'Resume';
+            btn.style.borderColor = 'var(--accent)';
+            btn.style.color = 'var(--accent)';
+        }
+    }
+
+    function resetTimer() {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        timerSeconds = 25 * 60;
+        document.getElementById('timerDisplay').innerText = formatTime(timerSeconds);
+        const btn = document.getElementById('timerToggleBtn');
+        btn.innerText = 'Start Focus';
+        btn.style.borderColor = 'var(--accent)';
+        btn.style.color = 'var(--accent)';
+    }
+
+    // --- CODE / JSON FORMATTER ---
+    function formatJsonCode() {
+        const input = document.getElementById('jsonInput');
+        try {
+            const parsed = JSON.parse(input.value);
+            input.value = JSON.stringify(parsed, null, 2);
+            playTone(660, 0.1);
+        } catch (e) {
+            alert('Invalid JSON structure: ' + e.message);
+            playTone(200, 0.2, 'sawtooth');
+        }
+    }
+
+    function clearJsonInput() {
+        document.getElementById('jsonInput').value = '';
+    }
+
+    // --- TERMINAL CONSOLE LOGIC ---
+    function appendTerminal(text, className = '') {
+        const box = document.getElementById('terminalBox');
+        const div = document.createElement('div');
+        div.className = `terminal-log ${className}`;
+        div.innerText = text;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    function handleTerminalKey(e) {
+        if (e.key === 'Enter') {
+            executeTerminalCommand();
+        }
+    }
+
+    function executeTerminalCommand() {
+        const inputEl = document.getElementById('terminalInput');
+        const cmd = inputEl.value.trim().toLowerCase();
+        if (!cmd) return;
+
+        appendTerminal(`> ${cmd}`, 'user');
+        inputEl.value = '';
+
+        if (cmd === 'help') {
+            appendTerminal('Available commands: status, feed, clear, version, matrix');
+        } else if (cmd === 'status') {
+            appendTerminal(`Level: ${state.level} | XP: ${state.xp} | Uptime: ${state.uptimeSeconds}s`, 'success');
+        } else if (cmd === 'feed') {
+            interactPet();
+            appendTerminal('Executed feed sequence. Pet XP increased.', 'success');
+        } else if (cmd === 'clear') {
+            document.getElementById('terminalBox').innerHTML = '<div class="terminal-log">Console cleared.</div>';
+        } else if (cmd === 'version') {
+            appendTerminal('Arachne v2.0 Production Build [Standalone]');
+        } else if (cmd === 'matrix') {
+            appendTerminal('Wake up, developer... The matrix has you.', 'success');
+            playTone(900, 0.5, 'sawtooth');
+        } else {
+            appendTerminal(`Command not recognized: '${cmd}'. Type 'help' for options.`);
+        }
+    }
+
+    // Initialize app on load
+    updatePetUI();
+    initHardwareSync();
+</script>
+
+</body>
+</html>
