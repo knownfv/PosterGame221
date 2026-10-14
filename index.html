@@ -46,7 +46,6 @@
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
         }
 
-        /* Header & Navigation Tabs */
         .app-header {
             padding: 16px;
             border-bottom: 1px solid var(--border);
@@ -58,7 +57,6 @@
         .app-title {
             font-size: 0.95rem;
             font-weight: 600;
-            letter-spacing: -0.025em;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -102,7 +100,6 @@
             background: var(--card-bg);
         }
 
-        /* View Containers */
         .view-section {
             display: none;
             padding: 20px;
@@ -114,7 +111,6 @@
             display: block;
         }
 
-        /* Pet View */
         .pet-stage {
             background: var(--bg);
             border: 1px solid var(--border);
@@ -122,14 +118,13 @@
             padding: 24px;
             text-align: center;
             margin-bottom: 16px;
-            position: relative;
         }
 
         .pet-avatar {
             font-size: 3.5rem;
             margin-bottom: 8px;
-            user-select: none;
             cursor: pointer;
+            user-select: none;
             transition: transform 0.2s;
         }
 
@@ -176,7 +171,6 @@
             font-family: var(--font-mono);
         }
 
-        /* Buttons & Actions */
         .btn-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -206,18 +200,12 @@
             color: var(--accent);
         }
 
-        .btn-primary:hover {
-            background: rgba(34, 197, 94, 0.2);
-        }
-
-        /* Pomodoro Timer View */
         .timer-display {
             font-size: 3rem;
             font-family: var(--font-mono);
             font-weight: 700;
             text-align: center;
             margin: 20px 0;
-            letter-spacing: -0.05em;
         }
 
         .timer-controls {
@@ -230,7 +218,6 @@
             flex: 1;
         }
 
-        /* Code Formatter View */
         textarea {
             width: 100%;
             height: 140px;
@@ -259,7 +246,6 @@
             flex: 1;
         }
 
-        /* Terminal Console View */
         .terminal-box {
             background: var(--bg);
             border: 1px solid var(--border);
@@ -303,23 +289,14 @@
             border-color: var(--border-focus);
         }
 
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 2px;
-        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <!-- App Header -->
     <div class="app-header">
         <div class="app-title">
             <div class="status-dot"></div>
@@ -328,7 +305,6 @@
         <div class="metric-value" id="headerLevel" style="font-size: 0.8rem; color: var(--text-muted);">Lv. 1</div>
     </div>
 
-    <!-- Navigation Tabs -->
     <div class="nav-tabs">
         <button class="tab-btn active" onclick="switchTab('pet', this)">Pet</button>
         <button class="tab-btn" onclick="switchTab('timer', this)">Focus</button>
@@ -336,7 +312,6 @@
         <button class="tab-btn" onclick="switchTab('terminal', this)">CLI</button>
     </div>
 
-    <!-- VIEW 1: PET COMPANION -->
     <div id="view-pet" class="view-section active">
         <div class="pet-stage">
             <div class="pet-avatar" id="petAvatar" onclick="interactPet()">(•̀ ω •́)</div>
@@ -350,12 +325,12 @@
                 <div class="metric-value" id="statXp">0 / 100 XP</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Battery Sync</div>
-                <div class="metric-value" id="statBattery">--</div>
+                <div class="metric-label">System Status</div>
+                <div class="metric-value" id="statStatus">Optimal</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Net Downlink</div>
-                <div class="metric-value" id="statNetwork">--</div>
+                <div class="metric-label">Network Mode</div>
+                <div class="metric-value" id="statNetwork">Local-First</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">Uptime Session</div>
@@ -369,7 +344,6 @@
         </div>
     </div>
 
-    <!-- VIEW 2: POMODORO TIMER -->
     <div id="view-timer" class="view-section">
         <div class="metric-label" style="text-align: center;">Dev Focus Session</div>
         <div class="timer-display" id="timerDisplay">25:00</div>
@@ -382,12 +356,11 @@
         <div class="metric-card" style="margin-top: 20px;">
             <div class="metric-label">Session Reward</div>
             <div class="metric-value" style="font-size: 0.85rem; font-weight: normal; color: var(--text-muted);">
-                Completing a full 25-minute focus session automatically feeds your cyber-pet +50 XP and plays a success chime.
+                Completing a full 25-minute focus session feeds your cyber-pet +50 XP and plays a success chime.
             </div>
         </div>
     </div>
 
-    <!-- VIEW 3: CODE FORMATTER -->
     <div id="view-tools" class="view-section">
         <div class="metric-label" style="margin-bottom: 6px;">JSON String Sanitizer</div>
         <textarea id="jsonInput" placeholder="Paste messy JSON or code here..."></textarea>
@@ -398,7 +371,6 @@
         </div>
     </div>
 
-    <!-- VIEW 4: TERMINAL CONSOLE -->
     <div id="view-terminal" class="view-section">
         <div class="terminal-box" id="terminalBox">
             <div class="terminal-log">Arachne CLI v2.0 initialized. Type 'help' for commands.</div>
@@ -411,7 +383,6 @@
 </div>
 
 <script>
-    // --- APP STATE & LOCAL STORAGE ---
     let state = JSON.parse(localStorage.getItem('arachne_pet_state')) || {
         level: 1,
         xp: 0,
@@ -423,7 +394,6 @@
         localStorage.setItem('arachne_pet_state', JSON.stringify(state));
     }
 
-    // --- AUDIO SYNTHESIZER (Web Audio API) ---
     let audioCtx = null;
     function playTone(frequency, duration, type = 'sine') {
         try {
@@ -443,12 +413,9 @@
             gain.connect(audioCtx.destination);
             osc.start();
             osc.stop(audioCtx.currentTime + duration);
-        } catch (e) {
-            // Audio context blocked until user interaction
-        }
+        } catch (e) {}
     }
 
-    // --- TAB SWITCHING ---
     function switchTab(tabId, el) {
         document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -457,7 +424,6 @@
         playTone(440, 0.05);
     }
 
-    // --- PET LOGIC ---
     const faces = ['(•̀ ω •́)', '(๑>◡<๑)', '(⌐■_■)', '(つ✧ω✧)つ', '(¬_¬ )'];
     
     function updatePetUI() {
@@ -469,8 +435,7 @@
 
     function interactPet() {
         state.xp += 15;
-        playTone(587.33, 0.1); // D5
-        
+        playTone(587.33, 0.1);
         let reqXp = state.level * 100;
         if (state.xp >= reqXp) {
             state.level++;
@@ -498,41 +463,6 @@
         }
     }
 
-    // --- HARDWARE WEB APIS ---
-    async function initHardwareSync() {
-        // Battery API
-        if ('getBattery' in navigator) {
-            try {
-                const battery = await navigator.getBattery();
-                const updateBattery = () => {
-                    const pct = Math.round(battery.level * 100);
-                    const charging = battery.charging ? '⚡' : '';
-                    document.getElementById('statBattery').innerText = `${pct}% ${charging}`;
-                };
-                updateBattery();
-                battery.addEventListener('levelchange', updateBattery);
-                battery.addEventListener('chargingchange', updateBattery);
-            } catch (e) {
-                document.getElementById('statBattery').innerText = 'N/A';
-            }
-        } else {
-            document.getElementById('statBattery').innerText = 'Unsupported';
-        }
-
-        // Network Information API
-        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-        if (connection) {
-            const updateNet = () => {
-                document.getElementById('statNetwork').innerText = `${connection.downlink || '?'} Mbps`;
-            };
-            updateNet();
-            connection.addEventListener('change', updateNet);
-        } else {
-            document.getElementById('statNetwork').innerText = 'Online';
-        }
-    }
-
-    // Uptime counter
     setInterval(() => {
         state.uptimeSeconds++;
         const mins = String(Math.floor(state.uptimeSeconds / 60)).padStart(2, '0');
@@ -540,7 +470,6 @@
         document.getElementById('statUptime').innerText = `${mins}:${secs}`;
     }, 1000);
 
-    // --- POMODORO TIMER LOGIC ---
     let timerInterval = null;
     let timerSeconds = 25 * 60;
     let isTimerRunning = false;
@@ -595,7 +524,6 @@
         btn.style.color = 'var(--accent)';
     }
 
-    // --- CODE / JSON FORMATTER ---
     function formatJsonCode() {
         const input = document.getElementById('jsonInput');
         try {
@@ -612,7 +540,6 @@
         document.getElementById('jsonInput').value = '';
     }
 
-    // --- TERMINAL CONSOLE LOGIC ---
     function appendTerminal(text, className = '') {
         const box = document.getElementById('terminalBox');
         const div = document.createElement('div');
@@ -655,9 +582,7 @@
         }
     }
 
-    // Initialize app on load
     updatePetUI();
-    initHardwareSync();
 </script>
 
 </body>
